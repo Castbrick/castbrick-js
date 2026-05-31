@@ -1,11 +1,11 @@
-# @castbrick/js
+# castbrick-js
 
 Official JavaScript/TypeScript SDK for the [CastBrick](https://castbrick.com) API.
 
 ## Installation
 
 ```bash
-npm install @castbrick/js
+npm install castbrick-js
 ```
 
 ## Requirements
@@ -16,7 +16,7 @@ npm install @castbrick/js
 ## Quick Start
 
 ```ts
-import { CastBrick } from "@castbrick/js";
+import { CastBrick } from "castbrick-js";
 
 const cb = new CastBrick({ apiKey: "your_api_key_here" });
 
@@ -39,8 +39,9 @@ Get your API key from the [CastBrick dashboard](https://app.castbrick.com/apikey
 const result = await cb.sms.send({
   recipients: ["+244923000000", "+244912000000"],
   content: "Your verification code is 1234",
-  senderId: "MyApp",         // optional
+  senderId: "MyApp",                   // optional — your approved Sender ID
   scheduledAt: "2026-04-01T10:00:00Z", // optional — schedule for later
+  fallback: true,                      // optional — fall back to CastBrick sender if senderId unavailable
 });
 
 console.log(result.messageId, result.recipientCount);
@@ -56,17 +57,21 @@ await cb.sms.send({
 });
 ```
 
-### Get a message
-
-```ts
-const message = await cb.sms.get("message-id");
-console.log(message.status); // "queued" | "sent" | "delivered" | "failed"
-```
-
 ### List messages
 
 ```ts
-const { items, totalCount } = await cb.sms.list(1, 20);
+// Simple
+const { items, totalCount } = await cb.sms.list();
+
+// With filters
+const { items } = await cb.sms.list({
+  page: 1,
+  pageSize: 20,
+  status: "delivered",       // pending | sent | delivered | failed | scheduled
+  phone: "+244923000000",
+  from: "2026-01-01T00:00:00Z",
+  to: "2026-06-01T00:00:00Z",
+});
 ```
 
 ### Cancel a scheduled SMS
@@ -88,10 +93,9 @@ const { items } = await cb.contacts.list(1, 20, "search term");
 ### Create contacts
 
 ```ts
-// Accepts comma or newline-separated values
+// Comma or newline-separated phone numbers
 await cb.contacts.create({
-  phoneNumbers: "+244923000000, +244912000000",
-  emails: "user@example.com",
+  phoneNumbers: "+244923000000\n+244912000000",
 });
 ```
 
@@ -107,12 +111,12 @@ await cb.contacts.delete("contact-id");
 // List all contact lists
 const { items } = await cb.contacts.listLists();
 
-// Create a list
-const list = await cb.contacts.createList("VIP Customers");
+// Create a list — returns the new list ID
+const listId = await cb.contacts.createList("VIP Customers");
 
 // Add / remove a contact from a list
-await cb.contacts.addToList(list.id, "contact-id");
-await cb.contacts.removeFromList(list.id, "contact-id");
+await cb.contacts.addToList(listId, "contact-id");
+await cb.contacts.removeFromList(listId, "contact-id");
 ```
 
 ---
@@ -141,7 +145,7 @@ await cb.broadcasts.update(id, {
   scheduleAt: "2026-04-05T08:00:00Z",
 });
 
-await cb.broadcasts.send(id); // sends at the scheduled time
+await cb.broadcasts.send(id);
 ```
 
 ### Other broadcast operations
@@ -160,7 +164,7 @@ const broadcast = await cb.broadcasts.get(id);
 ## Error Handling
 
 ```ts
-import { CastBrick, CastBrickApiError } from "@castbrick/js";
+import { CastBrick, CastBrickApiError } from "castbrick-js";
 
 try {
   await cb.sms.send({ recipients: ["+244923000000"], content: "Hello!" });
@@ -181,7 +185,15 @@ try {
 The SDK is written in TypeScript and exports all types:
 
 ```ts
-import type { SendSmsRequest, Broadcast, Contact, PagedResult } from "@castbrick/js";
+import type {
+  SendSmsRequest,
+  SmsListParams,
+  SmsMessage,
+  Broadcast,
+  Contact,
+  ContactList,
+  PagedResult,
+} from "castbrick-js";
 ```
 
 ---
