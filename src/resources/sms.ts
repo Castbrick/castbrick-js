@@ -1,5 +1,5 @@
 import type { CastBrickClient } from "../client.js";
-import type { PagedResult, SendSmsRequest, SendSmsResponse, SmsMessage } from "../types.js";
+import type { PagedResult, SendSmsRequest, SendSmsResponse, SmsListParams, SmsMessage } from "../types.js";
 
 export class SmsResource {
   constructor(private readonly client: CastBrickClient) {}
@@ -9,13 +9,19 @@ export class SmsResource {
     return this.client.post<SendSmsResponse>("/sms/send", request);
   }
 
-  /** List SMS messages */
-  list(page = 1, pageSize = 20): Promise<PagedResult<SmsMessage>> {
-    return this.client.get<PagedResult<SmsMessage>>("/sms", { pageNumber: page, pageSize });
+  /** List SMS messages with optional filters */
+  list(params: SmsListParams = {}): Promise<PagedResult<SmsMessage>> {
+    const { page = 1, pageSize = 20, status, phone, from, to } = params;
+    const query: Record<string, string | number> = { pageNumber: page, pageSize };
+    if (status) query.status = status;
+    if (phone) query.phone = phone;
+    if (from) query.from = from;
+    if (to) query.to = to;
+    return this.client.get<PagedResult<SmsMessage>>("/sms", query);
   }
 
-  /** Cancel a scheduled SMS */
+  /** Cancel a scheduled SMS by its ID */
   cancelScheduled(messageId: string): Promise<void> {
-    return this.client.post<void>("/sms/cancel-scheduled", { messageId });
+    return this.client.delete(`/sms/${messageId}`);
   }
 }

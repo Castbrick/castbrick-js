@@ -1,4 +1,4 @@
-export type ApiKeyPermission = "Email" | "Sms" | "Full";
+export type ApiKeyPermission = "Sms" | "Full";
 
 export interface CastBrickOptions {
   /** Your CastBrick API key */
@@ -29,6 +29,11 @@ export interface SendSmsRequest {
   scheduledAt?: string;
   /** Send to all contacts in this list instead of/in addition to `recipients` */
   contactListId?: string;
+  /**
+   * Whether to fall back to the CastBrick default sender when the chosen
+   * sender ID is unavailable. Defaults to true.
+   */
+  fallback?: boolean;
 }
 
 export interface SendSmsResponse {
@@ -55,6 +60,15 @@ export interface SmsMessage {
   deliveredAt: string | null;
 }
 
+export interface SmsListParams {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  phone?: string;
+  from?: string;
+  to?: string;
+}
+
 // ─── Contacts ───────────────────────────────────────────────────────────────
 
 export interface Contact {
@@ -67,8 +81,6 @@ export interface Contact {
 }
 
 export interface CreateContactRequest {
-  /** One or more email addresses (comma/newline separated) */
-  emails?: string;
   /** One or more phone numbers (comma/newline separated) */
   phoneNumbers?: string;
 }

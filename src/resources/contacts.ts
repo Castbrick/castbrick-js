@@ -16,9 +16,9 @@ export class ContactsResource {
     return this.client.get<Contact>(`/audience/contacts/${id}`);
   }
 
-  /** Create one or more contacts from comma/newline-separated emails or phone numbers */
-  create(data: CreateContactRequest): Promise<number> {
-    return this.client.post<number>("/audience/contacts", data);
+  /** Create one or more contacts from comma/newline-separated phone numbers */
+  create(data: CreateContactRequest): Promise<void> {
+    return this.client.post<void>("/audience/contacts", data);
   }
 
   /** Delete a contact */
@@ -38,9 +38,11 @@ export class ContactsResource {
     return this.client.get<ContactList>(`/audience/lists/${id}`);
   }
 
-  /** Create a contact list */
-  createList(name: string): Promise<ContactList> {
-    return this.client.post<ContactList>("/audience/lists", { name });
+  /**
+   * Create a contact list. Returns the ID of the created list.
+   */
+  createList(name: string): Promise<string> {
+    return this.client.post<string>("/audience/lists", { name });
   }
 
   /** Add a contact to a list */

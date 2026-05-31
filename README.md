@@ -176,17 +176,6 @@ try {
 
 ---
 
-## Custom Base URL
-
-```ts
-const cb = new CastBrick({
-  apiKey: "your_api_key_here",
-  baseUrl: "http://localhost:5000", // point to a local or staging instance
-});
-```
-
----
-
 ## TypeScript
 
 The SDK is written in TypeScript and exports all types:
