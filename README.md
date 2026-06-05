@@ -27,7 +27,7 @@ await cb.sms.send({
 });
 ```
 
-Get your API key from the [CastBrick dashboard](https://app.castbrick.com/apikeys).
+Get your API key from the [CastBrick dashboard](https://castbrick.co/apikeys).
 
 ---
 
