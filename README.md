@@ -161,6 +161,53 @@ const broadcast = await cb.broadcasts.get(id);
 
 ---
 
+## Push (Realtime pub/sub)
+
+CastBrick Push lets you deliver realtime events to browsers and mobile apps via SSE channels.
+
+### Server-side: issue token + publish
+
+```ts
+// Issue a short-lived channel token for the client
+const { token } = await cb.push.issueToken({
+  channels: ["orders", "user-42"],
+  userId: "user-123",   // optional
+  ttlSeconds: 3600,     // optional, default 3600
+});
+
+// Publish an event to a channel
+const result = await cb.push.publish({
+  channel: "orders",
+  event: "order.created",
+  data: { orderId: "abc123", total: 5000 },
+});
+
+console.log(result.delivered, result.creditsUsed);
+```
+
+### Browser-side: subscribe to channels
+
+```ts
+import { CastBrickPushClient } from "castbrick-js";
+
+// token comes from your backend (via the issueToken call above)
+const push = new CastBrickPushClient(token, {
+  onConnected: (channels) => console.log("connected to", channels),
+  onStatusChange: (status) => console.log("status:", status),
+});
+
+// Listen to events on a specific channel
+const unsubscribe = push.on("orders", (event) => {
+  console.log(event.event, event.data); // "order.created" { orderId: "abc123" }
+});
+
+// Later
+unsubscribe();       // stop receiving events on this channel
+push.disconnect();   // close the SSE connection
+```
+
+---
+
 ## Error Handling
 
 ```ts
@@ -193,6 +240,12 @@ import type {
   Contact,
   ContactList,
   PagedResult,
+  IssuePushTokenRequest,
+  IssuePushTokenResponse,
+  PublishEventRequest,
+  PublishEventResponse,
+  PushEvent,
+  PushClientStatus,
 } from "castbrick-js";
 ```
 
