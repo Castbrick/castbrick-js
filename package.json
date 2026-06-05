@@ -1,6 +1,6 @@
 {
   "name": "castbrick-js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Official JavaScript/TypeScript SDK for the CastBrick API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,6 +22,11 @@
   "devDependencies": {
     "typescript": "^5.4.0"
   },
-  "keywords": ["castbrick", "sms", "api", "sdk"],
+  "keywords": [
+    "castbrick",
+    "sms",
+    "api",
+    "sdk"
+  ],
   "license": "MIT"
 }

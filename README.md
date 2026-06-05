@@ -253,8 +253,10 @@ import type {
 
 ## Publishing
 
-Releases are published by GitHub Actions when a `v*` tag is pushed.
-The workflow uses npm Trusted Publishing through OIDC, so no `NPM_TOKEN` secret is required.
+Releases are published by GitHub Actions when code is pushed to `master`.
+The workflow runs checks, bumps the patch version, creates the matching `v*` tag,
+publishes to npm, then pushes the release commit and tag.
+It uses npm Trusted Publishing through OIDC, so no `NPM_TOKEN` secret is required.
 
 In npmjs.com package settings for `castbrick-js`, add a trusted publisher with:
 
