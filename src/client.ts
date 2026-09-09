@@ -6,7 +6,7 @@ export class CastBrickClient {
 
   constructor(options: CastBrickOptions) {
     if (!options.apiKey) throw new Error("CastBrick: apiKey is required");
-    this.baseUrl = (options.baseUrl ?? "https://api.castbrick.co").replace(/\/$/, "");
+    this.baseUrl = (options.baseUrl ?? "https://api.castbrick.co/v1").replace(/\/$/, "");
     this.headers = {
       Authorization: `Bearer ${options.apiKey}`,
       "Content-Type": "application/json",
@@ -36,6 +36,15 @@ export class CastBrickClient {
   async put<T>(path: string, body: unknown): Promise<T> {
     const res = await fetch(this.baseUrl + path, {
       method: "PUT",
+      headers: this.headers,
+      body: JSON.stringify(body),
+    });
+    return this.handleResponse<T>(res);
+  }
+
+  async patch<T>(path: string, body: unknown): Promise<T> {
+    const res = await fetch(this.baseUrl + path, {
+      method: "PATCH",
       headers: this.headers,
       body: JSON.stringify(body),
     });

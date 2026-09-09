@@ -1,6 +1,6 @@
 # castbrick-js
 
-Official JavaScript/TypeScript SDK for the [CastBrick](https://castbrick.com) API.
+Official JavaScript/TypeScript SDK for the [CastBrick](https://castbrick.co) API.
 
 ## Installation
 
@@ -161,9 +161,9 @@ const broadcast = await cb.broadcasts.get(id);
 
 ---
 
-## Push (Realtime pub/sub)
+## Push & Realtime API
 
-CastBrick Push lets you deliver realtime events to browsers and mobile apps via SSE channels.
+CastBrick Push & Realtime API lets you deliver Web & Mobile push notifications and stream realtime events via SSE channels.
 
 ### Server-side: issue token + publish
 
@@ -204,6 +204,74 @@ const unsubscribe = push.on("orders", (event) => {
 // Later
 unsubscribe();       // stop receiving events on this channel
 push.disconnect();   // close the SSE connection
+```
+
+---
+
+## Push Notifications (Web & Mobile)
+
+Better than OneSignal: **unlimited free subscribers**, **5,000 free pushes every month**, with zero manual Service Worker configuration.
+
+### Client-side (Browser / Web Push): Zero-Config Subscription
+
+One line handles browser permission, service worker registration, and device subscription:
+
+```ts
+import { CastBrickWebPush } from "castbrick-js";
+
+const result = await CastBrickWebPush.subscribe({
+  appId: "app_7a8b9c",
+  externalUserId: "user_42",        // optional
+  tags: { plan: "pro", lang: "pt" }  // optional
+});
+
+if (result.success) {
+  console.log("Subscribed device ID:", result.subscriptionId);
+}
+```
+
+### Server-side: Send Push Notifications
+
+```ts
+const response = await cb.push.send({
+  appId: "app_7a8b9c",
+  title: "Flash Sale 🚀",
+  body: "Get 30% off today only!",
+  iconUrl: "https://yourapp.com/icon.png",
+  actionUrl: "https://yourapp.com/sale",
+  target: {
+    all: true, // or subscriptionIds: ["sub_..."], or externalUserIds: ["user_42"]
+  }
+});
+
+console.log(`Delivered: ${response.deliveredCount}, Remaining Free: ${response.freePushesRemaining}`);
+```
+
+---
+
+## Billing
+
+```ts
+// Get current credit balance
+const balance = await cb.billing.getBalance();
+
+// List available credit packages
+const packages = await cb.billing.listPackages();
+
+// List credit consumption/transaction history
+const { items } = await cb.billing.listTransactions();
+```
+
+## Segments, Templates & Webhooks
+
+The SDK also provides native access to `cb.segments`, `cb.templates`, and `cb.webhooks`.
+
+```ts
+// Example: Create a Webhook
+await cb.webhooks.create({
+  endpoint: "https://yourapp.com/webhooks/castbrick",
+  eventType: "sms.delivered"
+});
 ```
 
 ---
